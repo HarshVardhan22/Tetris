@@ -11,7 +11,18 @@ document.addEventListener("DOMContentLoaded", () => {
   let timerId;
   let score = 0;
   const restart = document.getElementById("restart");
+  let up =document.getElementById("up");
+  let down = document.getElementById("down");
+  let left = document.getElementById("left");
+  let right = document.getElementById("right");
+  
+  //Mapping OnScreen Buttons to keyboard events
 
+  up.addEventListener("click",rotate);
+  down.addEventListener("click",moveDown);
+  left.addEventListener("click",moveLeft);
+  right.addEventListener('click',moveRight);
+  
   //Restart Game
   restart.addEventListener("click",function(){
     location.reload();
