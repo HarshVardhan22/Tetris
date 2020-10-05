@@ -4,12 +4,18 @@ document.addEventListener("DOMContentLoaded", () => {
   const scoreDisplay = document.getElementById("score");
   const startBtn = document.getElementById("start-button");
   const width = 10;
+  let top = document.getElementById("top");
   let displaySquares = document.querySelectorAll(".mini-grid div");
   const displayWidth = 0;
-  let displayIndex = 0;
   let nextRandom = 0;
   let timerId;
   let score = 0;
+  const restart = document.getElementById("restart");
+
+  //Restart Game
+  restart.addEventListener("click",function(){
+    location.reload();
+  })
 
   //Different tetrimino or block shapes
 
@@ -95,14 +101,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
   //Set Start/Pause btn
   startBtn.addEventListener("click", () => {
+
     if (timerId) {
       clearInterval(timerId);
       timerId = null;
     } else {
+      
       draw();
       timerId = setInterval(moveDown, 1000);
       nextRandom = Math.floor(Math.random() * theBlocks.length);
       displayShape();
+      top.style.display = "block";
     }
   });
 
@@ -188,7 +197,7 @@ document.addEventListener("DOMContentLoaded", () => {
     else if (e.keyCode === 39) moveRight();
     else if (e.keyCode === 40) moveDown();
   }
-  document.addEventListener("keyup", control);
+  document.addEventListener("keydown", control);
 
   function addScore() {
     for (let i = 0; i < 199; i += width) {
@@ -221,13 +230,19 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
 // gAME OVER
+
 function gameOver(){
   
    if (current.some((index) =>squares[currentPosition + index].classList.contains("taken"))) {
-     scoreDisplay.innerHTML = "GAME OVER Your Scored";
+      top.style.display = "none";
+     scoreDisplay.innerHTML =" GAME OVER Your Final Score is "+score;
      clearInterval(timerId);
+     
    }
   
 }
+
+
+
 });
 //

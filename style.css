@@ -1,3 +1,26 @@
+body{
+    font-family: sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    
+}
+
+header{
+    margin-bottom: 50px;
+    display: flex;
+    justify-content:center;
+    align-items: center;
+    flex-direction: column;
+}
+
+#restartPage{
+    background-color: darkorange;
+    height:400px;
+    width:300px;
+    display: none;
+}
 .grid{
     width: 200px;
     height : 400px;
@@ -12,7 +35,10 @@
     
     
 }
-
+h1{ 
+    display: flex;
+    flex-direction: row;
+}
 .block{
     background-color: coral;
 }
