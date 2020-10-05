@@ -1,91 +1,233 @@
-document.addEventListener('DOMContentLoaded', ()=>{
-    const grid = document.querySelector('.grid');
-    let squares = document.querySelectorAll('.grid div');
-    const ScoreDisplay = document.querySelector('score');
-    const StartBtn = document.querySelector('start-button');
-    const width = 10;
+document.addEventListener("DOMContentLoaded", () => {
+  const grid = document.querySelector(".grid");
+  let squares = Array.from(document.querySelectorAll(".grid div"));
+  const scoreDisplay = document.getElementById("score");
+  const startBtn = document.getElementById("start-button");
+  const width = 10;
+  let displaySquares = document.querySelectorAll(".mini-grid div");
+  const displayWidth = 0;
+  let displayIndex = 0;
+  let nextRandom = 0;
+  let timerId;
+  let score = 0;
 
-    //Block Designs
-    
-    const LBlock = [
-      [1, width + 1, width * 2 + 1, 2],
-      [width, width + 1, width + 2, width * 2 + 2],
-      [1, width * 1, width * 2 + 1, width * 2],
-      [width, width * 2, width * 2 + 1, width * 2 + 2]
-    ];
+  //Different tetrimino or block shapes
 
-    const zBlock = [
-      [width * 2, width * 2 + 1, width + 1, width + 2],
-      [1, width, width + 1, width * 2 + 1],
-      [width * 2, width * 2 + 1, width + 2, width + 1],
-      [1, width, width + 1, width * 2 + 1]
-    ];
+  const LBlock = [
+    [1, width + 1, width * 2 + 1, 2],
+    [0, width, width + 1, width + 2],
+    [0, width * 1, width * 2 + 1, width * 2],
+    [2, width, width + 1, width + 2],
+  ];
 
-    const oBlock = [
-      [0, 1, width, width + 1],
-      [0, 1, width, width + 1],
-      [0, 1, width, width + 1],
-      [0, 1, width, width + 1]
-    ];
+  const zBlock = [
+    [width * 2, width * 2 + 1, width + 1, width + 2],
+    [0, width, width + 1, width * 2 + 1],
+    [0, 1, width + 1, width + 2],
+    [width * 2, width, width + 1, 1],
+  ];
 
-    const tBlock = [
-      [1, width, width + 1, width + 2],
-      [width * 2 + 1, width, width + 1, width + 2],
-      [1, width * 2 + 1, width + 1, width + 2],
-      [1, width, width + 1, width *2 + 1]
-    ];
+  const oBlock = [
+    [0, 1, width, width + 1],
+    [0, 1, width, width + 1],
+    [0, 1, width, width + 1],
+    [0, 1, width, width + 1],
+  ];
 
-    const iBlock = [
-      [1, width + 1, width * 2 + 1, width * 3 + 1],
-      [width, width + 1, width + 2, width + 3],
-      [1, width + 1, width * 2 + 1, width * 3 + 1],
-      [width, width + 1, width + 2, width + 3]
-    ];
+  const tBlock = [
+    [1, width, width + 1, width + 2],
+    [width * 2 + 1, width, width + 1, width + 2],
+    [1, width * 2 + 1, width + 1, width + 2],
+    [1, width, width + 1, width * 2 + 1],
+  ];
 
+  const iBlock = [
+    [1, width + 1, width * 2 + 1, width * 3 + 1],
+    [width, width + 1, width + 2, width + 3],
+    [1, width + 1, width * 2 + 1, width * 3 + 1],
+    [width, width + 1, width + 2, width + 3],
+  ];
 
-const theBlocks = [LBlock,zBlock,tBlock,oBlock,iBlock];
+  const theBlocks = [LBlock, zBlock, tBlock, oBlock, iBlock];
 
-let currentPosition =4;
-let currentRotation =0;
+  //Block Designs for upcoming block
+  const upNextBlocks = [
+    [1, 2, 6, 10],
+    [5, 6, 10, 11],
+    [8, 5, 9, 13],
+    [0, 1, 4, 5],
+    [0, 4, 8, 12],
+  ];
 
-//selecting a tetrimino at random
-let random = Math.floor(Math.random()*theBlocks.length);
+  //display shape in mini grid
+  function displayShape() {
+    displaySquares.forEach((square) => {
+      square.classList.remove("block");
+    });
+    upNextBlocks[nextRandom].forEach((index) =>
+      displaySquares[index].classList.add("block")
+    );
+  }
 
-let current = theBlocks[random][currentRotation];
+  let currentPosition = Math.floor(Math.random() * theBlocks.length);
+  let currentRotation = 0;
 
-//Drawing the tetriminos or blocks
+  //selecting a tetrimino at random
+  let random = Math.floor(Math.random() * theBlocks.length);
 
-function draw(){
-  current.forEach(index=>{
-    squares[currentPosition+index].classList.add('block');
-  })
-}
+  let current = theBlocks[random][currentRotation];
 
-function undraw(){
-  current.forEach(index=>{
-    squares[currentPosition+index].classList.remove('block');
-  })
-}
+  //Drawing the tetriminos or blocks
 
-timerId = setInterval(moveDown, 200);
+  function draw() {
+    current.forEach((index) => {
+      squares[currentPosition + index].classList.add("block");
+    });
+  }
 
-function moveDown(){
-  undraw();
-  currentPosition+=width;
-  draw();
-  freeze();
-}
+  //Deleting the tetriminos or blocks
 
-function freeze(){
-  if( current.some(index => squares[currentPosition + index + width].classList.contains('taken'))){
-    current.forEach(index=>squares[currentPosition + index].classList.add('taken'));
+  function undraw() {
+    current.forEach((index) => {
+      squares[currentPosition + index].classList.remove("block");
+    });
+  }
+
+  //Set Start/Pause btn
+  startBtn.addEventListener("click", () => {
+    if (timerId) {
+      clearInterval(timerId);
+      timerId = null;
+    } else {
+      draw();
+      timerId = setInterval(moveDown, 1000);
+      nextRandom = Math.floor(Math.random() * theBlocks.length);
+      displayShape();
+    }
+  });
+
+  // Functions for moving and ratating the blocks
+
+  function moveDown() {
+    undraw();
+    currentPosition += width;
+    draw();
+    freeze();
+  }
+
+  function freeze() {
+    if (
+      current.some((index) =>
+        squares[currentPosition + index + width].classList.contains("taken")
+      )
+    ) {
+      current.forEach((index) =>
+        squares[currentPosition + index].classList.add("taken")
+      );
+
+      random = nextRandom;
+      nextRandom = Math.floor(Math.random() * theBlocks.length);
+      current = theBlocks[random][currentRotation];
+      currentPosition = 4;
+      draw();
+      displayShape();
+      addScore();
+      gameOver();
+    }
+  }
+
+  function moveLeft() {
+    undraw();
+    const isAtLeft = current.some(
+      (index) => [currentPosition + index] % width === 0
+    );
+
+    if (!isAtLeft) currentPosition -= 1;
+
+    if (
+      current.some((index) =>
+        squares[currentPosition + index].classList.contains("taken")
+      )
+    )
+      currentPosition += 1;
+
+    draw();
+  }
+
+  function moveRight() {
+    undraw();
+    const isAtRight = current.some(
+      (index) => [currentPosition + index] % width === 9
+    );
+
+    if (!isAtRight) currentPosition += 1;
+
+    if (
+      current.some((index) =>
+        squares[currentPosition + index].classList.contains("taken")
+      )
+    )
+      currentPosition -= 1;
+
+    draw();
+  }
+
+  function rotate() {
+    undraw();
+    currentRotation++;
+    if (currentRotation === 4) currentRotation = 0;
+    current = theBlocks[random][currentRotation];
+    draw();
+  }
+
+  //keycode based controls
+
+  function control(e) {
+    if (e.keyCode === 37) moveLeft();
+    else if (e.keyCode === 38) rotate();
+    else if (e.keyCode === 39) moveRight();
+    else if (e.keyCode === 40) moveDown();
+  }
+  document.addEventListener("keyup", control);
+
+  function addScore() {
+    for (let i = 0; i < 199; i += width) {
+      const row = [
+        i,
+        i + 1,
+        i + 2,
+        i + 3,
+        i + 4,
+        i + 5,
+        i + 6,
+        i + 7,
+        i + 8,
+        i + 9,
+      ];
+
+      if (row.every((index) => squares[index].classList.contains("taken"))) {
+        score += 10;
+        scoreDisplay.innerHTML = score;
+        row.forEach((index) => {
+          squares[index].classList.remove("taken");
+          squares[index].classList.remove("block");
+        });
+        const squaresRemoved = squares.splice(i,width);
+        //console.log(squaresRemoved);
+        squares = squaresRemoved.concat(squares);
+        squares.forEach((cell) => grid.appendChild(cell));
+      }
+    }
+  }
+
+// gAME OVER
+function gameOver(){
   
-    // create a new block falling
-  random = Math.floor(Math.random()*theBlocks.length);
-  current = theBlocks[random][currentRotation];
-  currentPosition = 4;
-  draw();
-
-}}
-})
- 
+   if (current.some((index) =>squares[currentPosition + index].classList.contains("taken"))) {
+     scoreDisplay.innerHTML = "GAME OVER Your Scored";
+     clearInterval(timerId);
+   }
+  
+}
+});
+//
