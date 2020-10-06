@@ -15,7 +15,8 @@ document.addEventListener("DOMContentLoaded", () => {
   let down = document.getElementById("down");
   let left = document.getElementById("left");
   let right = document.getElementById("right");
-  
+  let pop = document.createElement('audio');
+  pop.src = 'bgm.mp3';
   //Mapping OnScreen Buttons to keyboard events
 
   up.addEventListener("click",rotate);
@@ -76,13 +77,23 @@ document.addEventListener("DOMContentLoaded", () => {
     [0, 4, 8, 12],
   ];
 
+  const colors = [
+    "#a7d129",
+    "#ff0000",
+    "#ffd700",
+    "#ea0599",
+    "#00fff5"
+  ]
   //display shape in mini grid
   function displayShape() {
     displaySquares.forEach((square) => {
       square.classList.remove("block");
+      square.style.backgroundColor = '';
     });
-    upNextBlocks[nextRandom].forEach((index) =>
+    upNextBlocks[nextRandom].forEach((index) =>{
       displaySquares[index].classList.add("block")
+      displaySquares[index].style.backgroundColor = colors[nextRandom]
+    }
     );
   }
 
@@ -99,6 +110,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function draw() {
     current.forEach((index) => {
       squares[currentPosition + index].classList.add("block");
+      squares[currentPosition + index].style.backgroundColor = colors[random];
     });
   }
 
@@ -107,6 +119,7 @@ document.addEventListener("DOMContentLoaded", () => {
   function undraw() {
     current.forEach((index) => {
       squares[currentPosition + index].classList.remove("block");
+      squares[currentPosition + index].style.backgroundColor = "";
     });
   }
 
@@ -115,9 +128,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (timerId) {
       clearInterval(timerId);
+      pop.pause();
       timerId = null;
     } else {
-      
+      pop.play();
       draw();
       timerId = setInterval(moveDown, 1000);
       nextRandom = Math.floor(Math.random() * theBlocks.length);
@@ -126,6 +140,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  
   // Functions for moving and ratating the blocks
 
   function moveDown() {
@@ -231,6 +246,7 @@ document.addEventListener("DOMContentLoaded", () => {
         row.forEach((index) => {
           squares[index].classList.remove("taken");
           squares[index].classList.remove("block");
+          squares[index].style.backgroundColor = '';
         });
         const squaresRemoved = squares.splice(i,width);
         //console.log(squaresRemoved);
