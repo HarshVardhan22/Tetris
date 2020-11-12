@@ -16,7 +16,22 @@ document.addEventListener("DOMContentLoaded", () => {
   let left = document.getElementById("left");
   let right = document.getElementById("right");
   let pop = document.createElement('audio');
+  let mute = document.getElementById('mute');
   pop.src = 'bgm.mp3';
+
+  //to pause the bgm
+  mute.addEventListener("click",()=>{
+    
+    if(mute.innerHTML=== "Mute"){
+      pop.pause();
+      mute.innerHTML = "Unmute";
+    }
+    else{
+      pop.play();
+      mute.innerHTML = "Mute";
+    }
+  });
+
   //Mapping OnScreen Buttons to keyboard events
 
   up.addEventListener("click",rotate);
