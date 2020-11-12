@@ -17,6 +17,21 @@ document.addEventListener("DOMContentLoaded", () => {
   let right = document.getElementById("right");
   let pop = document.createElement('audio');
   let mute = document.getElementById('mute');
+  let difficulty = document.getElementById('difficulty');
+
+  let level = 1000;
+
+  difficulty.addEventListener("click",()=>{
+    console.log(difficulty.value);
+    if(difficulty.value==="1")
+      level = 1000;
+    else if(difficulty.value==="2")
+      level = 500;
+    else if(difficulty.value==="3")
+      level = 200;
+  })
+
+  
   pop.src = 'bgm.mp3';
 
   //to pause the bgm
@@ -148,7 +163,7 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
       pop.play();
       draw();
-      timerId = setInterval(moveDown, 1000);
+      timerId = setInterval(moveDown, level);
       nextRandom = Math.floor(Math.random() * theBlocks.length);
       displayShape();
       top.style.display = "block";
